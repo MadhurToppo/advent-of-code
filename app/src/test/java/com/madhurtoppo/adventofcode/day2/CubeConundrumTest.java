@@ -9,7 +9,7 @@ class CubeConundrumTest {
   private final CubeConundrum cubeConundrum = new CubeConundrum();
 
   @Test
-  void solveTest() {
+  void part1Test() {
     assertEquals(2476, cubeConundrum.part1());
   }
 
