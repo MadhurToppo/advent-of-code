@@ -7,15 +7,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class ReadFile {
-  public ReadFile() {
-    /* Empty constructor */
+
+  private final String file;
+
+  public ReadFile(String file) {
+    this.file = file;
   }
 
   public BufferedReader getReader() {
     final InputStreamReader streamReader =
         new InputStreamReader(
-            Objects.requireNonNull(App.class.getResourceAsStream("/day1/trebuchet-input.txt")),
-            StandardCharsets.UTF_8);
+            Objects.requireNonNull(App.class.getResourceAsStream(file)), StandardCharsets.UTF_8);
     return new BufferedReader(streamReader);
   }
 }

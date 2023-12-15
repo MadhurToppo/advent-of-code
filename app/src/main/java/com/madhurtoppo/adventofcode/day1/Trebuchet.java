@@ -6,17 +6,14 @@ import java.util.Map;
 
 public class Trebuchet {
 
-  private final ReadFile readFile = new ReadFile();
-
+  private final ReadFile readFile = new ReadFile("/day1/trebuchet-input.txt");
+  private final BufferedReader reader = readFile.getReader();
   private final Map<String, String> digitMap =
       Map.of(
           "one", "o1e", "two", "t2o", "three", "t3e", "four", "f4r", "five", "f5e", "six", "s6x",
           "seven", "s7n", "eight", "e8t", "nine", "n9e");
 
   public int part1() {
-
-    final BufferedReader reader = readFile.getReader();
-
     return reader
         .lines()
         .map(this::getAllDigits)
@@ -27,9 +24,6 @@ public class Trebuchet {
   }
 
   public int part2() {
-
-    final BufferedReader reader = readFile.getReader();
-
     return reader
         .lines()
         .map(this::replaceWrittenDigits)
@@ -41,7 +35,6 @@ public class Trebuchet {
   }
 
   private String replaceWrittenDigits(String input) {
-
     for (final Map.Entry<String, String> entry : digitMap.entrySet())
       input = input.replaceAll(entry.getKey(), entry.getValue());
     return input;
