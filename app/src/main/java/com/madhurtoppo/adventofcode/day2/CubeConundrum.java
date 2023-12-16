@@ -3,6 +3,7 @@ package com.madhurtoppo.adventofcode.day2;
 import com.madhurtoppo.adventofcode.util.ReadFile;
 import java.io.BufferedReader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CubeConundrum {
@@ -25,31 +26,31 @@ public class CubeConundrum {
   private boolean isGamePossible(String line) {
     return Arrays.stream(line.split(":")[1].split(";"))
         .map(this::getColorsMap)
-        .allMatch(m -> isRoundPossible(m.get("red"), m.get("green"), m.get("blue")));
+        .allMatch(
+            m ->
+                m.get("red") <= RED_MAX
+                    && m.get("green") <= GREEN_MAX
+                    && m.get("blue") <= BLUE_MAX);
   }
 
-  private boolean isRoundPossible(Integer red, Integer green, Integer blue) {
-    return red <= RED_MAX && green <= GREEN_MAX && blue <= BLUE_MAX;
+  private Map<String, Integer> getColorsMap(String round) {
+    final Map<String, Integer> colorMap = new HashMap<>(Map.of("red", 0, "green", 0, "blue", 0));
+    for (String colorSet : round.split(",")) {
+      final String[] colorAndCount = colorSet.strip().split(" ");
+      final int count = Integer.parseInt(colorAndCount[0]);
+      final String color = colorAndCount[1];
+      switch (color) {
+        case "red" -> colorMap.put(color, colorMap.get("red") + count);
+        case "green" -> colorMap.put(color, colorMap.get("green") + count);
+        case "blue" -> colorMap.put(color, colorMap.get("blue") + count);
+        default -> throw new IllegalStateException("Unexpected value: " + color);
+      }
+    }
+    return colorMap;
   }
 
   private String getGameId(String line) {
     return line.split(":")[0].substring(5);
-  }
-
-  private Map<String, Integer> getColorsMap(String round) {
-    int red = 0, green = 0, blue = 0;
-    for (String colorsSet : round.split(",")) {
-      String[] colorCount = colorsSet.strip().split(" ");
-      int sum;
-      sum = Integer.parseInt(colorCount[0]);
-      String type = colorCount[1];
-      switch (type) {
-        case "red" -> red += sum;
-        case "green" -> green += sum;
-        case "blue" -> blue += sum;
-      }
-    }
-    return Map.of("red", red, "green", green, "blue", blue);
   }
 
   public int part2() {
