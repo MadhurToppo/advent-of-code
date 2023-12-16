@@ -55,38 +55,19 @@ public class CubeConundrum {
 
   public int part2() {
     int power = 0;
-
     for (String line : reader.lines().toList()) {
-
       String[] gameParts = line.split(":");
-      String[] parts = gameParts[1].replaceAll(";", ",").split(",");
-
+      String[] parts = gameParts[1].replace(";", ",").split(",");
       int red = -1, green = -1, blue = -1;
-
       for (String part : parts) {
-        part = part.strip();
-
-        String[] item = part.split(" ");
-
-        int count = Integer.parseInt(item[0]);
-        String type = item[1];
-
-        switch (type) {
-          case "red" -> {
-            if (red == -1 || count > red) {
-              red = count;
-            }
-          }
-          case "green" -> {
-            if (green == -1 || count > green) {
-              green = count;
-            }
-          }
-          case "blue" -> {
-            if (blue == -1 || count > blue) {
-              blue = count;
-            }
-          }
+        final String[] colorAndCount = part.strip().split(" ");
+        final int count = Integer.parseInt(colorAndCount[0]);
+        final String color = colorAndCount[1];
+        switch (color) {
+          case "red" -> red = (red == -1 || count > red) ? count : red;
+          case "green" -> green = (green == -1 || count > green) ? count : green;
+          case "blue" -> blue = (blue == -1 || count > blue) ? count : blue;
+          default -> throw new IllegalStateException("Unexpected value: " + color);
         }
       }
       power += (red * green * blue);
