@@ -55,24 +55,23 @@ public class CubeConundrum {
   }
 
   private int calculatePowerForParts(String[] parts) {
-    int[] counts = {-1, -1, -1}; // Initial values for red, green, and blue
-
-    for (String part : parts) {
-      String[] colorAndCount = part.strip().split(" ");
-      int count = Integer.parseInt(colorAndCount[0]);
-      String color = colorAndCount[1];
-
-      int colorIndex =
-          switch (color) {
-            case "red" -> 0;
-            case "green" -> 1;
-            case "blue" -> 2;
-            default -> throw new IllegalStateException("Unexpected value: " + color);
-          };
-
-      counts[colorIndex] = Math.max(counts[colorIndex], count);
-    }
-
-    return Arrays.stream(counts).reduce(Math::multiplyExact).orElse(0);
+    int[] colorCounts = new int[3];
+    Arrays.fill(colorCounts, Integer.MIN_VALUE);
+    Arrays.stream(parts)
+        .map(part -> part.strip().split(" "))
+        .forEach(
+            colorSet -> {
+              final int count = Integer.parseInt(colorSet[0]);
+              final String color = colorSet[1];
+              final int i =
+                  switch (color) {
+                    case "red" -> 0;
+                    case "green" -> 1;
+                    case "blue" -> 2;
+                    default -> throw new IllegalStateException("Unexpected value: " + color);
+                  };
+              colorCounts[i] = Math.max(colorCounts[i], count);
+            });
+    return Arrays.stream(colorCounts).reduce(Math::multiplyExact).orElse(0);
   }
 }

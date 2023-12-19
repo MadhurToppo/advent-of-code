@@ -35,9 +35,11 @@ public class Trebuchet {
   }
 
   private String replaceWrittenDigits(String input) {
-    for (final Map.Entry<String, String> entry : digitMap.entrySet())
-      input = input.replaceAll(entry.getKey(), entry.getValue());
-    return input;
+    final StringBuilder result = new StringBuilder(input);
+    digitMap.forEach(
+        (key, value) ->
+            result.replace(0, result.length(), result.toString().replaceAll(key, value)));
+    return result.toString();
   }
 
   private String getAllDigits(final String input) {
