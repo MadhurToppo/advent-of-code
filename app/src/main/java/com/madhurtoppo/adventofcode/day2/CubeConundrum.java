@@ -26,13 +26,11 @@ public class CubeConundrum {
   private boolean isGamePossible(String line) {
     return Arrays.stream(line.split(":")[1].split(";"))
         .map(this::getColorsMap)
-        .allMatch(this::isValidColorMap);
-  }
-
-  private boolean isValidColorMap(Map<String, Integer> colorMap) {
-    return colorMap.getOrDefault("red", 0) <= RED_MAX
-        && colorMap.getOrDefault("green", 0) <= GREEN_MAX
-        && colorMap.getOrDefault("blue", 0) <= BLUE_MAX;
+        .allMatch(
+            colorMap ->
+                colorMap.getOrDefault("red", 0) <= RED_MAX
+                    && colorMap.getOrDefault("green", 0) <= GREEN_MAX
+                    && colorMap.getOrDefault("blue", 0) <= BLUE_MAX);
   }
 
   private Map<String, Integer> getColorsMap(String round) {
@@ -50,24 +48,31 @@ public class CubeConundrum {
   }
 
   public int part2() {
-    int power = 0;
-    for (String line : reader.lines().toList()) {
-      String[] gameParts = line.split(":");
-      String[] parts = gameParts[1].replace(";", ",").split(",");
-      int red = -1, green = -1, blue = -1;
-      for (String part : parts) {
-        final String[] colorAndCount = part.strip().split(" ");
-        final int count = Integer.parseInt(colorAndCount[0]);
-        final String color = colorAndCount[1];
-        switch (color) {
-          case "red" -> red = (red == -1 || count > red) ? count : red;
-          case "green" -> green = (green == -1 || count > green) ? count : green;
-          case "blue" -> blue = (blue == -1 || count > blue) ? count : blue;
-          default -> throw new IllegalStateException("Unexpected value: " + color);
-        }
-      }
-      power += (red * green * blue);
+    return reader.lines().toList().stream()
+        .map(line -> line.split(":")[1].replace(";", ",").split(","))
+        .map(this::calculatePowerForParts)
+        .reduce(0, Integer::sum);
+  }
+
+  private int calculatePowerForParts(String[] parts) {
+    int[] counts = {-1, -1, -1}; // Initial values for red, green, and blue
+
+    for (String part : parts) {
+      String[] colorAndCount = part.strip().split(" ");
+      int count = Integer.parseInt(colorAndCount[0]);
+      String color = colorAndCount[1];
+
+      int colorIndex =
+          switch (color) {
+            case "red" -> 0;
+            case "green" -> 1;
+            case "blue" -> 2;
+            default -> throw new IllegalStateException("Unexpected value: " + color);
+          };
+
+      counts[colorIndex] = Math.max(counts[colorIndex], count);
     }
-    return power;
+
+    return Arrays.stream(counts).reduce(Math::multiplyExact).orElse(0);
   }
 }
