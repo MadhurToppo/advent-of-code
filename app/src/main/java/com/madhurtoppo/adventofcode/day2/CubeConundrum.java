@@ -3,8 +3,8 @@ package com.madhurtoppo.adventofcode.day2;
 import com.madhurtoppo.adventofcode.util.ReadFile;
 import java.io.BufferedReader;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CubeConundrum {
 
@@ -26,27 +26,23 @@ public class CubeConundrum {
   private boolean isGamePossible(String line) {
     return Arrays.stream(line.split(":")[1].split(";"))
         .map(this::getColorsMap)
-        .allMatch(
-            m ->
-                m.get("red") <= RED_MAX
-                    && m.get("green") <= GREEN_MAX
-                    && m.get("blue") <= BLUE_MAX);
+        .allMatch(this::isValidColorMap);
+  }
+
+  private boolean isValidColorMap(Map<String, Integer> colorMap) {
+    return colorMap.getOrDefault("red", 0) <= RED_MAX
+        && colorMap.getOrDefault("green", 0) <= GREEN_MAX
+        && colorMap.getOrDefault("blue", 0) <= BLUE_MAX;
   }
 
   private Map<String, Integer> getColorsMap(String round) {
-    final Map<String, Integer> colorMap = new HashMap<>(Map.of("red", 0, "green", 0, "blue", 0));
-    for (String colorSet : round.split(",")) {
-      final String[] colorAndCount = colorSet.strip().split(" ");
-      final int count = Integer.parseInt(colorAndCount[0]);
-      final String color = colorAndCount[1];
-      switch (color) {
-        case "red" -> colorMap.put(color, colorMap.get("red") + count);
-        case "green" -> colorMap.put(color, colorMap.get("green") + count);
-        case "blue" -> colorMap.put(color, colorMap.get("blue") + count);
-        default -> throw new IllegalStateException("Unexpected value: " + color);
-      }
-    }
-    return colorMap;
+    return Arrays.stream(round.split(","))
+        .map(String::strip)
+        .map(colorSet -> colorSet.split(" "))
+        .collect(
+            Collectors.groupingBy(
+                colorAndCount -> colorAndCount[1],
+                Collectors.summingInt(colorAndCount -> Integer.parseInt(colorAndCount[0]))));
   }
 
   private String getGameId(String line) {
